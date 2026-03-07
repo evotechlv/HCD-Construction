@@ -7,7 +7,8 @@ const WHATSAPP_NUMBER = "17027626588"
 
 export function Contact() {
   // Replace "mjvlbpqq" with your actual Formspree ID from your dashboard
-  const [state, handleSubmit] = useForm("meeroqvq");
+  //const [state, handleSubmit] = useForm("meeroqvq");
+  const [state, formspreeSubmit] = useForm("meeroqvq");
 
   return (
     <section id="contact" className="bg-background py-16 sm:py-24 lg:py-32">
@@ -84,7 +85,7 @@ export function Contact() {
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+              <form onSubmit={formspreeSubmit} className="space-y-5 sm:space-y-6">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
                   <div>
                     <Label text="First Name" htmlFor="firstName" />
