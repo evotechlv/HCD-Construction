@@ -1,13 +1,44 @@
 "use client"
 
+import { useState } from "react"
 import { Mail, Phone, MapPin, ArrowRight, Loader2 } from "lucide-react"
+import emailjs from '@emailjs/browser';
 import { useForm, ValidationError } from '@formspree/react';
+
 
 const WHATSAPP_NUMBER = "17027626588"
 
 export function Contact() {
-  // Replace "mjvlbpqq" with your actual Formspree ID from your dashboard
-  const [state, handleSubmit] = useForm("meeroqvq");
+  const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [state, handleSubmit] = useForm("mjvlbpqq");
+  
+  // Added state to capture form data
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    message: ""
+  })
+
+  const handleChange = (e) => {
+    const { id, value } = e.target
+    setFormData((prev) => ({ ...prev, [id]: value }))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+
+    // Simulate an API call
+    console.log("Form Data Submitted:", formData)
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+    
+    setLoading(false)
+    setSubmitted(true)
+  }
+
 
   return (
     <section id="contact" className="bg-background py-16 sm:py-24 lg:py-32">
@@ -68,7 +99,7 @@ export function Contact() {
 
           {/* Form Section */}
           <div className="min-h-[400px]">
-            {state.succeeded ? (
+            {submitted ? (
               <div className="flex h-full items-center justify-center border border-border p-10 sm:p-12 animate-in fade-in zoom-in duration-300">
                 <div className="text-center">
                   <p className="text-xl font-bold text-foreground sm:text-2xl">Thank you.</p>
@@ -76,7 +107,7 @@ export function Contact() {
                     {"We'll be in touch within 24 hours."}
                   </p>
                   <button 
-                    onClick={() => window.location.reload()}
+                    onClick={() => setSubmitted(false)}
                     className="mt-6 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground underline underline-offset-4"
                   >
                     Send another message
@@ -88,40 +119,39 @@ export function Contact() {
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
                   <div>
                     <Label text="First Name" htmlFor="firstName" />
-                    <Input id="firstName" name="firstName" placeholder="John" required />
+                    <Input id="firstName" value={formData.firstName} onChange={handleChange} placeholder="John" required />
                   </div>
                   <div>
                     <Label text="Last Name" htmlFor="lastName" />
-                    <Input id="lastName" name="lastName" placeholder="Doe" required />
+                    <Input id="lastName" value={formData.lastName} onChange={handleChange} placeholder="Doe" required />
                   </div>
                 </div>
                 <div>
                   <Label text="Email" htmlFor="email" />
-                  <Input id="email" name="email" type="email" placeholder="john@example.com" required />
-                  <ValidationError prefix="Email" field="email" errors={state.errors} className="text-xs text-red-500 mt-1" />
+                  <Input id="email" type="email" value={formData.email} onChange={handleChange} placeholder="john@example.com" required />
                 </div>
                 <div>
                   <Label text="Phone" htmlFor="phone" />
-                  <Input id="phone" name="phone" type="tel" placeholder="(555) 123-4567" />
+                  <Input id="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="(555) 123-4567" />
                 </div>
                 <div>
                   <Label text="Tell us about your project" htmlFor="message" />
                   <textarea
                     id="message"
-                    name="message"
                     rows={3}
                     required
+                    value={formData.message}
+                    onChange={handleChange}
                     className="mt-2 w-full resize-none border-b border-border bg-transparent pb-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-foreground sm:pb-3"
                     placeholder="Describe your project..."
                   />
-                  <ValidationError prefix="Message" field="message" errors={state.errors} className="text-xs text-red-500 mt-1" />
                 </div>
                 <button
                   type="submit"
-                  disabled={state.submitting}
+                  disabled={loading}
                   className="inline-flex w-full items-center justify-center gap-2 border border-foreground bg-foreground px-6 py-3.5 text-sm font-medium uppercase tracking-wider text-primary-foreground transition-colors hover:bg-transparent hover:text-foreground disabled:opacity-50 sm:w-auto sm:px-8 sm:py-4"
                 >
-                  {state.submitting ? (
+                  {loading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Sending...
@@ -142,7 +172,7 @@ export function Contact() {
   )
 }
 
-// Small helper components
+// Small helper components to keep the main return clean
 function Label({ text, htmlFor }) {
   return (
     <label htmlFor={htmlFor} className="block text-[10px] uppercase tracking-[0.15em] text-muted-foreground sm:text-xs">
