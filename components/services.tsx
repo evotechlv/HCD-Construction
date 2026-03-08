@@ -75,22 +75,22 @@ const services = [
     description: "Flexible financing options so you can start your project now and pay over time.",
   },
   {
-    icon: PencilRuler,
+    icon: DollarSign,
     title: "Architecture & Engineering",
     description: "Professional blueprints and structural plans designed for safety, local compliance, and aesthetic appeal.",
   },
   {
-    icon: Construction,
+    icon: DollarSign,
     title: "New Construction",
     description: "Ground-up builds for residential and commercial properties using the latest sustainable construction methods.",
   },
   {
-    icon: Trash2,
+    icon: DollarSign,
     title: "Demolition",
     description: "Safe and efficient site clearing, structural demolition, and debris removal to prepare for your new vision.",
   },
   {
-    icon: Layout,
+    icon: DollarSign,
     title: "Trim & Interiors",
     description: "Precision finish carpentry, baseboards, crown molding, and high-end interior detailing for a polished look.",
   },
