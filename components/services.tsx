@@ -113,7 +113,7 @@ export function Services() {
           </h2>
         </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-px bg-border sm:mt-16 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-10 grid grid-cols-2 gap-px bg-border sm:mt-16 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {services.map((service) => (
             <div
               key={service.title}
