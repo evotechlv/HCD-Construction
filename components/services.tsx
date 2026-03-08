@@ -11,6 +11,10 @@ import {
   Fence,
   ShieldCheck,
   Wrench,
+  PencilRuler,
+  Construction,
+  Trash2,
+  Layout,
 } from "lucide-react"
 
 const services = [
@@ -75,22 +79,22 @@ const services = [
     description: "Flexible financing options so you can start your project now and pay over time.",
   },
   {
-    icon: DollarSign,
+    icon: PencilRuler,
     title: "Architecture & Engineering",
     description: "Professional blueprints and structural plans designed for safety, local compliance, and aesthetic appeal.",
   },
   {
-    icon: DollarSign,
+    icon: Construction,
     title: "New Construction",
     description: "Ground-up builds for residential and commercial properties using the latest sustainable construction methods.",
   },
   {
-    icon: DollarSign,
+    icon: Trash2,
     title: "Demolition",
     description: "Safe and efficient site clearing, structural demolition, and debris removal to prepare for your new vision.",
   },
   {
-    icon: DollarSign,
+    icon: Layout,
     title: "Trim & Interiors",
     description: "Precision finish carpentry, baseboards, crown molding, and high-end interior detailing for a polished look.",
   },
