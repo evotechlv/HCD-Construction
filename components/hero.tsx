@@ -21,15 +21,15 @@ export function Hero() {
       <div className="relative z-10 mx-auto w-full max-w-7xl px-6 lg:px-8">
         <div className="max-w-3xl">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground sm:text-sm">
-            Construction & Remodeling
+            ARCHITECTURE • ENGINEERING • CONSTRUCTION & REMODELING
           </p>
           <h1 className="mt-4 text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:mt-6 md:text-7xl lg:text-8xl text-balance">
-            Building
+            Your Project.
             <br />
-            Your Vision.
+            Our Expertise.
           </h1>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:mt-6 md:text-xl">
-            Quality craftsmanship that stands the test of time. From residential homes to commercial buildings, we deliver excellence.
+            Complete design-build services for residential and commercial projects. We architect, engineer, and construct spaces that exceed expectations and stand the test of time.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4">
             <Link
