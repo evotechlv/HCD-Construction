@@ -10,8 +10,16 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const _geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const metadata: Metadata = {
-  title: 'HCD Construction | Building Your Vision',
+  title: 'HCD Construction | Premium Remodeling & Custom Builds in Las Vegas',
   description: 'Premium construction and remodeling services. 18+ years of experience delivering quality craftsmanship across residential and commercial projects.',
+  keywords: [
+    'General Contractor Las Vegas',
+    'Kitchen Remodeling Las Vegas',
+    'Home Renovations Summerlin', // Adding specific high-end neighborhoods like Summerlin helps!
+    'Commercial Construction Vegas',
+    'Bathroom Remodel Las Vegas',
+    'HCD Construction'
+  ],
   generator: 'v0.app',
   icons: {
     icon: [
