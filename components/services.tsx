@@ -31,7 +31,8 @@ const services = [
   {
     icon: Hammer,
     title: "Renovations",
-    description: "Transform your existing space with expert renovation and remodeling services.",
+    description: "Expert home transformations across Summerlin, Las Vegas and Henderson. From high-end kitchen remodels to full property modernizations, we deliver precision craftsmanship.",
+    //description: "Transform your existing space with expert renovation and remodeling services.",
   },
   {
     icon: PaintBucket,
