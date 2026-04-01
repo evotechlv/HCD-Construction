@@ -52,6 +52,41 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "GeneralContractor",
+              "name": "HCD Construction",
+              "image": "https://hcdconstructions.com/og-image.jpg",
+              "url": "https://hcdconstructions.com",
+              "telephone": "(702) 762-6588",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "", // Add your office address if you have one
+                "addressLocality": "Las Vegas",
+                "addressRegion": "NV",
+                "postalCode": "89101", // Update to your primary zip
+                "addressCountry": "US"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 36.1699,
+                "longitude": -115.1398
+              },
+              "openingHoursSpecification": {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                "opens": "08:00",
+                "closes": "17:00"
+              },
+              "areaServed": ["Las Vegas", "Henderson", "Summerlin", "North Las Vegas"]
+            })
+          }}
+        />
+
         {children}
         <Analytics />
         <GoogleAnalytics />
