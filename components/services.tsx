@@ -21,7 +21,8 @@ const services = [
   {
     icon: Home,
     title: "Residential Construction",
-    description: "Custom home builds tailored to your lifestyle, from foundations to finishing touches.",
+    description: "Custom home builds tailored to the Las Vegas lifestyle. With 18+ years of local experience, we handle everything from foundations to luxury finishing touches.",
+    //description: "Custom home builds tailored to your lifestyle, from foundations to finishing touches.",
   },
   {
     icon: Building2,
