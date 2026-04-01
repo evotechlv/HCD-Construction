@@ -15,10 +15,15 @@ export function About() {
             </h2>
             <div className="mt-5 space-y-4 text-sm leading-relaxed text-muted-foreground sm:mt-8 sm:space-y-5 sm:text-base">
               <p>
-                With over 18 years of experience, HCD Construction delivers comprehensive construction and remodeling services across residential and commercial projects.
+                With over 18 years of experience building across the Las Vegas Valley, HCD Construction delivers premier residential and commercial solutions. 
+                {/* With over 18 years of experience, HCD Construction delivers comprehensive construction and remodeling services across residential and commercial projects. */}
               </p>
               <p>
-                From building from the ground up to detailed renovations, we cover all your construction needs. Our team of expert craftsmen brings dedication and precision to every project.
+                From high-end custom builds in Summerlin to modern office renovations in Henderson, our deep understanding of Clark County building codes and desert-specific construction ensures your project is built to last.
+                {/* From building from the ground up to detailed renovations, we cover all your construction needs. Our team of expert craftsmen brings dedication and precision to every project. */}
+              </p>
+              <p>
+                 Our team of expert craftsmen brings unmatched precision to every ground-up build and detailed remodel.
               </p>
             </div>
             <div className="mt-8 grid grid-cols-2 gap-8 sm:mt-10">
