@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HCD Construction — Floor Plans Banner</title>
+<style>
+  /* ===== EDIT YOUR DETAILS HERE ===== */
+  :root{
+    --ink:#111111;       /* near-black */
+    --maroon:#4a1414;    /* HCD maroon */
+    --maroon-2:#6b1f1f;
+    --tan:#d8c3a5;       /* warm tan accent (matches plans) */
+    --tan-soft:#efe6d6;
+    --cream:#faf6ef;
+    --olive:#6f7048;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#888;display:flex;justify-content:center;padding:24px;font-family:'Helvetica Neue',Arial,sans-serif;}
+
+  /* 1080x1350 — Instagram / FB portrait poster */
+  .banner{
+    width:1080px;height:1350px;background:var(--cream);
+    position:relative;overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:0 12px 40px rgba(0,0,0,.4);
+  }
+
+  /* Top brand bar */
+  .top{
+    background:var(--ink);color:#fff;padding:34px 50px;
+    display:flex;align-items:center;gap:26px;
+  }
+  .top img{height:96px;width:auto;}
+  .top .tagline{margin-left:auto;text-align:right;}
+  .top .tagline .big{font-size:30px;font-weight:800;letter-spacing:1px;color:var(--tan);}
+  .top .tagline .small{font-size:17px;color:#cfcfcf;letter-spacing:3px;text-transform:uppercase;margin-top:4px;}
+
+  /* Headline block */
+  .headline{
+    background:var(--maroon);color:#fff;text-align:center;padding:30px 40px;
+  }
+  .headline h1{font-size:46px;font-weight:800;letter-spacing:.5px;line-height:1.1;}
+  .headline p{font-size:20px;color:var(--tan);margin-top:8px;letter-spacing:2px;text-transform:uppercase;}
+
+  /* Plans */
+  .plans{flex:1;display:flex;gap:24px;padding:32px 40px 16px;}
+  .plan{
+    flex:1;background:#fff;border:1px solid #e3dccd;border-radius:10px;
+    display:flex;flex-direction:column;overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+  }
+  .plan .label{
+    background:var(--ink);color:#fff;text-align:center;
+    padding:14px;font-size:22px;font-weight:700;letter-spacing:1px;
+  }
+  .plan .label span{color:var(--tan);font-weight:500;font-size:15px;display:block;letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+  .plan .img-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:14px;background:#fff;}
+  .plan img{max-width:100%;max-height:100%;object-fit:contain;}
+
+  /* Service area strip */
+  .service{
+    background:var(--tan-soft);text-align:center;padding:18px 40px;
+    font-size:19px;color:var(--maroon);font-weight:600;letter-spacing:.5px;
+  }
+  .service b{color:var(--ink);}
+
+  /* CTA footer */
+  .cta{
+    background:var(--ink);color:#fff;padding:26px 50px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;
+  }
+  .cta .left .name{font-size:24px;font-weight:800;letter-spacing:1px;}
+  .cta .left .loc{font-size:15px;color:var(--tan);letter-spacing:2px;text-transform:uppercase;margin-top:3px;}
+  .cta .right{text-align:right;font-size:18px;line-height:1.5;}
+  .cta .right .phone{font-size:26px;font-weight:800;color:var(--tan);}
+</style>
+</head>
+<body>
+  <div class="banner">
+
+    <div class="top">
+      <img src="./hcd-logo-light.png" alt="HCD Construction"
+           onerror="this.onerror=null;this.src='./hcd-logo-dark-full.png';this.style.background='#fff';this.style.padding='8px';this.style.borderRadius='6px';">
+      <div class="tagline">
+        <div class="big">CRAFTED TO LAST</div>
+        <div class="small">Custom Homes &amp; Renovations</div>
+      </div>
+    </div>
+
+    <div class="headline">
+      <h1>NOW BUILDING IN LAS VEGAS</h1>
+      <p>1 &amp; 2 Bedroom Floor Plans</p>
+    </div>
+
+    <div class="plans">
+      <div class="plan">
+        <div class="label">2-BEDROOM<span>2 Bed · 1 Bath</span></div>
+        <div class="img-wrap"><img src="./floorplan-2br.png" alt="2 bedroom floor plan"></div>
+      </div>
+      <div class="plan">
+        <div class="label">1-BEDROOM<span>1 Bed · 1 Bath</span></div>
+        <div class="img-wrap"><img src="./floorplan-1br.png" alt="1 bedroom floor plan"></div>
+      </div>
+    </div>
+
+    <div class="service">
+      Serving <b>Las Vegas, NV</b> &amp; surrounding areas — up to <b>200 miles</b>
+    </div>
+
+    <div class="cta">
+      <div class="left">
+        <div class="name">HCD CONSTRUCTION</div>
+        <div class="loc">Licensed &amp; Insured · Las Vegas, NV</div>
+      </div>
+      <div class="right">
+        <div class="phone">(702) 000-0000</div>
+        <div>yourwebsite.com · email@hcd.com</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

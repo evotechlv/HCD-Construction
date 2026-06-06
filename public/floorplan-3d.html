@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HCD Construction — 3D Floor Plan (2 Bedroom)</title>
+<style>
+  :root{ --ink:#111; --maroon:#4a1414; --tan:#d8c3a5; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;overflow:hidden;font-family:'Helvetica Neue',Arial,sans-serif;background:#0e0e0e;}
+  #app{position:fixed;inset:0;}
+  canvas{display:block;}
+  .topbar{
+    position:fixed;top:0;left:0;right:0;height:64px;z-index:10;
+    background:linear-gradient(180deg,rgba(17,17,17,.92),rgba(17,17,17,.0));
+    display:flex;align-items:center;gap:16px;padding:0 22px;color:#fff;pointer-events:none;
+  }
+  .topbar .brand{font-size:22px;font-weight:800;letter-spacing:1px;}
+  .topbar .brand b{color:var(--tan);}
+  .topbar .sub{font-size:13px;color:#bbb;letter-spacing:2px;text-transform:uppercase;}
+  .hint{
+    position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:10;
+    background:rgba(17,17,17,.8);color:#eee;font-size:13px;padding:9px 16px;border-radius:30px;
+    letter-spacing:.5px;border:1px solid rgba(216,195,165,.3);
+  }
+  .panel{
+    position:fixed;top:74px;right:16px;z-index:10;background:rgba(17,17,17,.82);
+    color:#eee;border:1px solid rgba(216,195,165,.25);border-radius:10px;padding:12px 14px;font-size:13px;width:190px;
+  }
+  .panel h4{color:var(--tan);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+  .panel label{display:flex;align-items:center;gap:8px;margin:7px 0;cursor:pointer;}
+  .panel button{
+    width:100%;margin-top:10px;background:var(--maroon);color:#fff;border:none;padding:9px;border-radius:6px;
+    font-weight:700;letter-spacing:1px;cursor:pointer;font-size:12px;
+  }
+  .panel button:hover{background:#6b1f1f;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="topbar">
+  <div class="brand">HCD <b>CONSTRUCTION</b></div>
+  <div class="sub">2-Bedroom · 3D Floor Plan</div>
+</div>
+<div class="panel">
+  <h4>View</h4>
+  <label><input type="checkbox" id="toggleRoof" checked> Furniture</label>
+  <label><input type="checkbox" id="toggleLabels" checked> Room labels</label>
+  <button id="resetView">Reset camera</button>
+</div>
+<div class="hint">Drag to rotate &nbsp;·&nbsp; Scroll to zoom &nbsp;·&nbsp; Right-drag to pan</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const T = THREE;
+const scene = new T.Scene();
+scene.background = new T.Color(0x14140f);
+
+const app = document.getElementById('app');
+const camera = new T.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 5000);
+const renderer = new T.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = T.PCFSoftShadowMap;
+app.appendChild(renderer.domElement);
+
+// ---- Lighting ----
+scene.add(new T.HemisphereLight(0xffffff, 0x404036, 0.55));
+const amb = new T.AmbientLight(0xffffff, 0.35); scene.add(amb);
+const sun = new T.DirectionalLight(0xfff4e0, 1.0);
+sun.position.set(40, 70, 30);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.near=1; sun.shadow.camera.far=300;
+sun.shadow.camera.left=-60; sun.shadow.camera.right=60;
+sun.shadow.camera.top=60; sun.shadow.camera.bottom=-60;
+scene.add(sun);
+
+// ---- Materials / palette ----
+const COL = {
+  wall:   0x2b2b2b,
+  floorWood: 0xc79a64,
+  floorTile: 0xe7ddc9,
+  rug:    0xe9e2d2,
+  bed:    0xf3eee2,
+  bedRun: 0x6f7048,
+  sofa:   0xeae3d3,
+  wood:   0x8a5a33,
+  green:  0x6f7048,
+  appl:   0xd8d8d8,
+  dark:   0x3a3a3a,
+};
+const mat = (c, opts={}) => new T.MeshStandardMaterial({color:c, roughness:0.85, metalness:0.05, ...opts});
+
+const WALL_H = 9;       // ft
+const WALL_T = 0.5;     // ft thickness
+const root = new T.Group(); scene.add(root);
+const furnGroup = new T.Group(); root.add(furnGroup);
+const labelGroup = new T.Group(); root.add(labelGroup);
+
+// Footprint (feet). x:left-right (0..W), z:front(entry)..back(bedrooms)
+const W = 34, D = 33;
+
+// center everything around origin
+function box(w,h,d,x,y,z,material,cast=true){
+  const m = new T.Mesh(new T.BoxGeometry(w,h,d), material);
+  m.position.set(x - W/2, y, z - D/2);
+  m.castShadow = cast; m.receiveShadow = true;
+  return m;
+}
+
+// ---- Ground / lot ----
+const lot = new T.Mesh(new T.PlaneGeometry(120,120), mat(0x1c1c16,{roughness:1}));
+lot.rotation.x = -Math.PI/2; lot.position.y = -0.05; lot.receiveShadow = true;
+root.add(lot);
+
+// ---- Room floor tiles ----
+// [name, x0,z0, x1,z1, color]
+const rooms = [
+  ['BEDROOM 1', 0,20, 13,33, COL.floorWood],
+  ['BEDROOM 2', 21,20, 34,33, COL.floorWood],
+  ['BATH', 14,24.5, 19.5,33, COL.floorTile],
+  ['LAUNDRY', 28,14, 34,19.5, COL.floorTile],
+  ['KITCHEN', 0,0, 8,13, COL.floorTile],
+  ['DINING', 8,0, 21,13, COL.floorWood],
+  ['LIVING', 21,0, 34,13, COL.floorWood],
+  ['HALL', 8,13, 28,20, COL.floorWood],
+  ['HALL2', 13,20, 21,24.5, COL.floorWood],
+];
+function floorTile(x0,z0,x1,z1,color){
+  const w = x1-x0, d = z1-z0;
+  const f = box(w,0.2,d, x0+w/2, 0.1, z0+d/2, mat(color,{roughness:0.7}), false);
+  return f;
+}
+rooms.forEach(r=>root.add(floorTile(r[1],r[2],r[3],r[4],r[5])));
+
+// ---- Walls ----
+// perimeter + interior partitions as line segments [x0,z0,x1,z1]
+function wallSeg(x0,z0,x1,z1){
+  const dx=x1-x0, dz=z1-z0;
+  const len=Math.hypot(dx,dz);
+  const m = new T.Mesh(new T.BoxGeometry(len, WALL_H, WALL_T), mat(COL.wall,{roughness:0.95}));
+  m.position.set((x0+x1)/2 - W/2, WALL_H/2, (z0+z1)/2 - D/2);
+  m.rotation.y = -Math.atan2(dz,dx);
+  m.castShadow=true; m.receiveShadow=true;
+  root.add(m);
+}
+// perimeter
+wallSeg(0,0, 0,33);     // left
+wallSeg(34,0, 34,33);   // right
+wallSeg(0,33, 34,33);   // back
+wallSeg(0,0, 14,0);     // front-left (entry gap 14-18)
+wallSeg(18,0, 34,0);    // front-right
+// interior - bedrooms / bath band
+wallSeg(0,20, 9,20);    // bedroom1 front wall (door gap 9-13 area)
+wallSeg(13,20, 13,33);  // bedroom1 right wall
+wallSeg(21,20, 21,33);  // bedroom2 left wall
+wallSeg(25,20, 34,20);  // bedroom2 front wall (door gap 21-25)
+wallSeg(14,24.5, 14,33);// bath left
+wallSeg(19.5,24.5, 19.5,33); // bath right
+wallSeg(14,24.5, 16,24.5);   // bath front (door gap)
+wallSeg(18,24.5, 19.5,24.5);
+// laundry
+wallSeg(28,14, 28,19.5);
+wallSeg(28,19.5, 31,19.5);   // door gap then
+wallSeg(33,19.5, 34,19.5);
+wallSeg(28,14, 34,14);
+// kitchen / dining divider (partial - open concept, just a short return)
+wallSeg(8,0, 8,5);
+
+// ---- Furniture helpers ----
+function bed(cx,cz, w=6, l=7, rot=0){
+  const g = new T.Group();
+  const base = new T.Mesh(new T.BoxGeometry(w,1.6,l), mat(COL.bed));
+  base.position.y=0.9; base.castShadow=true; base.receiveShadow=true; g.add(base);
+  const runner = new T.Mesh(new T.BoxGeometry(w,0.2,l*0.45), mat(COL.bedRun));
+  runner.position.set(0,1.75,l*0.2); g.add(runner);
+  const p1=new T.Mesh(new T.BoxGeometry(w*0.42,0.7,1.4), mat(0xffffff));
+  p1.position.set(-w*0.22,1.75,-l*0.32); g.add(p1);
+  const p2=p1.clone(); p2.position.x=w*0.22; g.add(p2);
+  const hb=new T.Mesh(new T.BoxGeometry(w+0.6,3.2,0.4), mat(COL.wood));
+  hb.position.set(0,1.6,-l/2-0.1); hb.castShadow=true; g.add(hb);
+  g.position.set(cx-W/2,0,cz-D/2); g.rotation.y=rot;
+  furnGroup.add(g);
+}
+function rug(cx,cz,w,d){
+  const r=new T.Mesh(new T.BoxGeometry(w,0.06,d), mat(COL.rug,{roughness:1}));
+  r.position.set(cx-W/2,0.22,cz-D/2); r.receiveShadow=true; furnGroup.add(r);
+}
+function sofa(cx,cz,rot=0){
+  const g=new T.Group();
+  const seat=new T.Mesh(new T.BoxGeometry(8,1.4,3), mat(COL.sofa)); seat.position.y=0.9; seat.castShadow=true; g.add(seat);
+  const back=new T.Mesh(new T.BoxGeometry(8,2.2,0.8), mat(COL.sofa)); back.position.set(0,1.5,-1.3); g.add(back);
+  const a1=new T.Mesh(new T.BoxGeometry(0.8,1.8,3), mat(COL.sofa)); a1.position.set(-3.9,1.2,0); g.add(a1);
+  const a2=a1.clone(); a2.position.x=3.9; g.add(a2);
+  g.position.set(cx-W/2,0,cz-D/2); g.rotation.y=rot; furnGroup.add(g);
+}
+function table(cx,cz,w,d,h=1.6,color=COL.wood){
+  const g=new T.Group();
+  const top=new T.Mesh(new T.BoxGeometry(w,0.25,d), mat(color)); top.position.y=h; top.castShadow=true; g.add(top);
+  const legGeo=new T.BoxGeometry(0.3,h,0.3), legMat=mat(0x4a3320);
+  [[w/2-.4,d/2-.4],[-w/2+.4,d/2-.4],[w/2-.4,-d/2+.4],[-w/2+.4,-d/2+.4]].forEach(p=>{
+    const l=new T.Mesh(legGeo,legMat); l.position.set(p[0],h/2,p[1]); g.add(l);
+  });
+  g.position.set(cx-W/2,0,cz-D/2); furnGroup.add(g);
+}
+function chair(cx,cz){
+  const g=new T.Group();
+  const s=new T.Mesh(new T.BoxGeometry(1.4,0.25,1.4), mat(COL.green)); s.position.y=1.2; g.add(s);
+  const b=new T.Mesh(new T.BoxGeometry(1.4,1.4,0.2), mat(COL.green)); b.position.set(0,1.9,-0.6); g.add(b);
+  g.position.set(cx-W/2,0,cz-D/2); g.castShadow=true; furnGroup.add(g);
+}
+function counter(cx,cz,w,d){
+  const c=new T.Mesh(new T.BoxGeometry(w,3,d), mat(COL.appl)); c.position.set(cx-W/2,1.5,cz-D/2);
+  c.castShadow=true;c.receiveShadow=true; furnGroup.add(c);
+}
+function appliance(cx,cz,w,d,color=COL.dark){
+  const a=new T.Mesh(new T.BoxGeometry(w,3,d), mat(color,{metalness:0.4,roughness:0.4}));
+  a.position.set(cx-W/2,1.5,cz-D/2); a.castShadow=true; furnGroup.add(a);
+}
+function island(cx,cz,w,d){
+  const c=new T.Mesh(new T.BoxGeometry(w,3,d), mat(0xe7ddc9));
+  c.position.set(cx-W/2,1.5,cz-D/2); c.castShadow=true;c.receiveShadow=true; furnGroup.add(c);
+}
+
+// ---- Place furniture ----
+// Bedroom 1 (top-left), bed against back wall
+rug(6.5,27,9,9);
+bed(6.5,29.5,6,7,0);
+// Bedroom 2 (top-right)
+rug(27.5,27,9,9);
+bed(27.5,29.5,6,7,0);
+// Bath
+counter(15.2,32,1.6,3);          // tub-ish block
+appliance(17.5,26.2,1.6,1.6,0xf2f2f2); // toilet block
+// Laundry
+appliance(32.5,16,1.6,2.4,0xeaeaea);
+// Kitchen (left)
+counter(0.9,6.5,1.6,12);   // left counter run
+appliance(1,11,2,2,COL.dark); // stove (top)
+appliance(1,2,2.4,2.4,0xbfbfbf); // fridge (bottom)
+island(5,7,2,9);           // island with stools
+chair(6.6,4); chair(6.6,7); chair(6.6,10);
+// Dining (center)
+table(14.5,6.5,5,9);
+[ [12.6,3.5],[12.6,6.5],[12.6,9.5],[16.4,3.5],[16.4,6.5],[16.4,9.5] ].forEach(p=>chair(p[0],p[1]));
+// Living (bottom-right)
+rug(27.5,6.5,12,12);
+sofa(27.5,2.4,0);
+table(27.5,7,4,4,1.3);     // coffee table
+counter(27.5,12.4,7,1.2);  // media console-ish (slim)
+
+// ---- Room labels (sprites) ----
+function makeLabel(text){
+  const c=document.createElement('canvas'); const s=256; c.width=s*2; c.height=s/1.6;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='rgba(17,17,17,0.0)'; ctx.fillRect(0,0,c.width,c.height);
+  ctx.font='bold 60px Helvetica, Arial'; ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.strokeStyle='rgba(0,0,0,0.55)'; ctx.lineWidth=8; ctx.strokeText(text,c.width/2,c.height/2);
+  ctx.fillText(text,c.width/2,c.height/2);
+  const tex=new T.CanvasTexture(c); tex.anisotropy=4;
+  const spr=new T.Sprite(new T.SpriteMaterial({map:tex,depthTest:false,transparent:true}));
+  spr.scale.set(7,2.2,1);
+  return spr;
+}
+const labels = [
+  ['BEDROOM 1',6.5,27],['BEDROOM 2',27.5,27],['BATH',16.7,29],['LAUNDRY',31,16.5],
+  ['KITCHEN',3.5,6.5],['DINING',14.5,11.5],['LIVING',27.5,9.5]
+];
+labels.forEach(L=>{ const s=makeLabel(L[0]); s.position.set(L[1]-W/2, 5.5, L[2]-D/2); labelGroup.add(s); });
+
+// Entry marker
+const entry = makeLabel('▲ ENTRY');
+entry.position.set(16-W/2, 2.5, -1.5-D/2); entry.scale.set(6,1.9,1);
+labelGroup.add(entry);
+
+// ---- Hand-rolled orbit controls ----
+const target = new T.Vector3(0, 2, 0);
+let radius = 58, theta = -Math.PI/4, phi = Math.PI/3.2;
+function applyCam(){
+  camera.position.set(
+    target.x + radius*Math.sin(phi)*Math.cos(theta),
+    target.y + radius*Math.cos(phi),
+    target.z + radius*Math.sin(phi)*Math.sin(theta)
+  );
+  camera.lookAt(target);
+}
+applyCam();
+let dragging=false, panning=false, lx=0, ly=0;
+const el = renderer.domElement;
+el.addEventListener('contextmenu',e=>e.preventDefault());
+el.addEventListener('mousedown',e=>{ if(e.button===2||e.shiftKey){panning=true;}else{dragging=true;} lx=e.clientX; ly=e.clientY; });
+window.addEventListener('mouseup',()=>{dragging=false;panning=false;});
+window.addEventListener('mousemove',e=>{
+  const dx=e.clientX-lx, dy=e.clientY-ly; lx=e.clientX; ly=e.clientY;
+  if(dragging){ theta+=dx*0.008; phi=Math.max(0.15,Math.min(Math.PI/2.05, phi-dy*0.006)); applyCam(); }
+  else if(panning){
+    const right=new T.Vector3(); camera.getWorldDirection(right);
+    const up=new T.Vector3(0,1,0); const r=new T.Vector3().crossVectors(right,up).normalize();
+    const f=new T.Vector3(r.x,0,r.z).normalize();
+    target.addScaledVector(r, -dx*radius*0.0016);
+    target.addScaledVector(new T.Vector3().crossVectors(up,r).setY(0).normalize(), -dy*radius*0.0016);
+    applyCam();
+  }
+});
+el.addEventListener('wheel',e=>{ e.preventDefault(); radius=Math.max(16,Math.min(140, radius+e.deltaY*0.04)); applyCam(); },{passive:false});
+// touch
+let pinch=0;
+el.addEventListener('touchstart',e=>{ if(e.touches.length===1){dragging=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;} else if(e.touches.length===2){pinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);} },{passive:true});
+el.addEventListener('touchmove',e=>{
+  if(e.touches.length===1&&dragging){ const dx=e.touches[0].clientX-lx,dy=e.touches[0].clientY-ly; lx=e.touches[0].clientX;ly=e.touches[0].clientY; theta+=dx*0.008; phi=Math.max(0.15,Math.min(Math.PI/2.05,phi-dy*0.006)); applyCam(); }
+  else if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); radius=Math.max(16,Math.min(140,radius+(pinch-d)*0.08)); pinch=d; applyCam(); }
+},{passive:true});
+el.addEventListener('touchend',()=>{dragging=false;});
+
+// ---- UI ----
+document.getElementById('toggleRoof').addEventListener('change',e=>{ furnGroup.visible=e.target.checked; });
+document.getElementById('toggleLabels').addEventListener('change',e=>{ labelGroup.visible=e.target.checked; });
+document.getElementById('resetView').addEventListener('click',()=>{ radius=58; theta=-Math.PI/4; phi=Math.PI/3.2; target.set(0,2,0); applyCam(); });
+
+window.addEventListener('resize',()=>{
+  camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+});
+
+(function loop(){ requestAnimationFrame(loop); renderer.render(scene,camera); })();
+</script>
+</body>
+</html>
