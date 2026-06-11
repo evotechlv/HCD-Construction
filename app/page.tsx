@@ -8,6 +8,7 @@ import { CTA } from "@/components/cta"
 import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
 import { WhatsAppFab } from "@/components/whatsapp-fab"
+import { Reviews } from "@/components/reviews"
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <Services />
       <About />
       <Projects />
+      <Reviews />
       <CTA />
       <Contact />
       <Footer />

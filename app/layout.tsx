@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { GoogleAnalytics } from '@/components/google-analytics'
+import { MetaPixel } from '@/components/meta-pixel'
 import { CookieConsent } from '@/components/cookie-consent'
 import './globals.css'
 
@@ -90,6 +91,7 @@ export default function RootLayout({
         {children}
         <Analytics />
         <GoogleAnalytics />
+        <MetaPixel />
         <CookieConsent />
       </body>
     </html>
