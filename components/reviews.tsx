@@ -1,18 +1,23 @@
 import { Star } from "lucide-react"
 import { getReviews, type Review } from "@/lib/reviews"
+import { LeaveReviewButton } from "@/components/leave-review-modal"
 
 /* ------------------------------------------------------------------
    HCD Construction — Reviews section (Option D: Summary + Marquee)
    Async server component. Pulls data from lib/reviews.ts (live Google
    Places API with a curated fallback). Pure-CSS marquee — no client JS.
+   The "Leave a review" CTA opens a client-side modal funnel
+   (components/leave-review-modal.tsx).
 
    Setup:
      1. Copy lib/reviews.ts -> lib/reviews.ts
-     2. Add the @keyframes block to app/globals.css (see INTEGRATION.md)
-     3. Render <Reviews /> between <Projects /> and <CTA /> in page.tsx
+     2. Copy leave-review-modal.tsx -> components/leave-review-modal.tsx
+        and set its Google / Facebook review URLs
+     3. Add the @keyframes block to app/globals.css (see INTEGRATION.md)
+     4. Render <Reviews /> between <Projects /> and <CTA /> in page.tsx
 ------------------------------------------------------------------ */
 
-// Link this to HCD's public Google review profile ("write a review" URL).
+// HCD's public Google review profile (the "see all reviews" page).
 const GOOGLE_REVIEW_URL = "#"
 
 /* ---------- atoms ---------- */
@@ -144,10 +149,11 @@ export async function Reviews() {
                 href={GOOGLE_REVIEW_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 border border-foreground bg-foreground px-5 py-3 text-xs font-medium uppercase tracking-wider text-primary-foreground transition-colors hover:bg-transparent hover:text-foreground"
+                className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
               >
                 Read all reviews
               </a>
+              <LeaveReviewButton />
             </div>
           </div>
         </div>
