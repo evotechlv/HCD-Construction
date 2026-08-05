@@ -1,5 +1,8 @@
 import { MetadataRoute } from 'next'
 
+// NOTE: This is a one-page site. Only list URLs that actually exist —
+// listing pages that 404 hurts crawl trust. If you add real pages later
+// (e.g. /kitchen-remodeling-las-vegas), add them back here.
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://hcdconstructions.com'
 
@@ -7,32 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: baseUrl,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/about`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/services`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/projects`,
-      lastModified: new Date(),
       changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.5,
+      priority: 1,
     },
   ]
 }
